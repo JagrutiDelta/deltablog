@@ -1,29 +1,48 @@
 import mongoose from "mongoose";
 
-let connection = null;
+const MONGODB_URI = process.env.MONGOURL;
+
+if (!MONGODB_URI) {
+  throw new Error("Please define the MONGOURL environment variable inside .env");
+}
+
+/**
+ * Global is used here to maintain a cached connection across hot reloads
+ * in development. This prevents connections growing exponentially
+ * during API Route usage.
+ */
+let cached = global.mongoose;
+
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
 
 export async function connectToDatabase() {
-    if (connection) {
-        return connection;
-    }
+  if (cached.conn) {
+    return cached.conn;
+  }
 
-    try {
-        if (!process.env.MONGOURL) {
-            throw new Error("MONGOURL is not defined in .env");
-        }
+  if (!cached.promise) {
+    const opts = {
+      bufferCommands: true, // Re-enable buffering but ensure we await
+      serverSelectionTimeoutMS: 10000,
+    };
 
-        console.log("Connecting to MongoDB...");
-        const db = await mongoose.connect(process.env.MONGOURL, {
-            serverSelectionTimeoutMS: 10000, // Timeout after 10s instead of 30s
-            bufferCommands: false, // Fix "buffering timed out" by failing early if not connected
-        });
+    console.log("Creating new MongoDB connection pool...");
+    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+      console.log("MongoDB Connected Successfully");
+      return mongoose;
+    });
+  }
 
-        connection = db.connection;
-        console.log("MongoDb Connected Successfully");
-        
-        return connection;
-    } catch (error) {
-        console.error("MongoDB Connection Error:", error.message);
-        throw error; // Rethrow so the API route can handle it
-    }
-}
+  try {
+    cached.conn = await cached.promise;
+  } catch (e) {
+    cached.promise = null;
+    console.error("MongoDB Connection Error:", e.message);
+    throw e;
+  }
+
+  return cached.conn;
+}
+
