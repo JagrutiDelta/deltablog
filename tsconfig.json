@@ -1,0 +1,55 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    },
+    "target": "ES2017"
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "src/app/layout.tsx",
+    "src/app/widgets/retroGrid.jsx",
+    "src/components/magicui/icon-cloud.tsx",
+    "src/components/component/accordianforfooter.jsx",
+    "src/components/component/customer-story.jsx",
+    "src/components/component/blogs.jsx",
+    "src/components/component/Mobile_Nav.jsx",
+    "src/components/ui/floating-navbar.jsx",
+    "src/components/component/tech-stack.jsx",
+    "src/components/component/solutions.jsx",
+    "src/components/component/icrm.jsx",
+    "sitemap.js",
+    "src/app/solutions/ConstructionContractingIndustry/page.jsx",
+    "src/hooks/use-carousel",
+    ".next/dev/types/**/*.ts"
+, "src/app/api/contactus/route.js"  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
